@@ -1,0 +1,78 @@
+/* Codeforces 1514E - Baby Ehab's Hyper Apartment
+ * https://codeforces.com/problemset/problem/1514/E
+ * rating: 2700 | tags: binary search, graphs, interactive, sortings, two pointers
+ * source: accepted submission #113517193 (GNU C11) downloaded from Codeforces
+ */
+
+#include <stdio.h>
+#include <string.h>
+
+#define N	100
+
+int query1(int i, int j) {
+	int x;
+
+	printf("1 %d %d\n", i, j), fflush(stdout);
+	scanf("%d", &x);
+	return x;
+}
+
+int query2(int i, int *jj, int k) {
+	int h, x;
+
+	printf("2 %d %d", i, k);
+	for (h = 0; h < k; h++)
+		printf(" %d", jj[h]);
+	printf("\n"), fflush(stdout);
+	scanf("%d", &x);
+	return x;
+}
+
+int main() {
+	int t;
+
+	scanf("%d", &t);
+	while (t--) {
+		static char aa[N][N + 1];
+		static int ii[N];
+		int n, h, h1, h2, i, l, r, x;
+
+		scanf("%d", &n);
+		for (i = 0; i < n; i++) {
+			int lower, upper;
+
+			lower = -1, upper = i;
+			while (upper - lower > 1) {
+				h = (lower + upper) / 2;
+				if (query1(ii[h], i))
+					lower = h;
+				else
+					upper = h;
+			}
+			for (h = i; h > upper; h--)
+				ii[h] = ii[h - 1];
+			ii[upper] = i;
+		}
+		for (i = 0; i < n; i++)
+			memset(aa[i], '0', n * sizeof *aa[i]), aa[i][n] = 0;
+		for (h1 = 0; h1 < n; h1++)
+			for (h2 = h1; h2 < n; h2++)
+				aa[ii[h1]][ii[h2]] = '1';
+		for (h = n - 1, l = n - 1, r = n - 1; h >= 0; h--) {
+			while (l > 0 && query2(ii[h], ii, l))
+				l--;
+			if (h == l) {
+				for (h1 = l; h1 <= r; h1++)
+					for (h2 = h1; h2 <= r; h2++)
+						aa[ii[h2]][ii[h1]] = '1';
+				l = r = h - 1;
+			}
+		}
+		printf("3\n");
+		for (i = 0; i < n; i++)
+			printf("%s\n", aa[i]);
+		fflush(stdout);
+		scanf("%d", &x);
+	}
+	return 0;
+}
